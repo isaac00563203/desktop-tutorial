@@ -1,5 +1,14 @@
-# Welcome to GitHub Desktop!
+# 强化机器学习练习册
 
-This is your README. READMEs are where you can communicate what your project is and how to use it.
+## 学习环境
+### 使用stable baselines 3 
+### 使用tqsdk 获取历史数据
+### 在取得历史数据得同时,将数据保存在本地
 
-Write your name on line 6, save it, and then head back to GitHub Desktop.
+# 包括使用心得,学习笔记等 在Doc目录下
+
+# 训练
+train.py
+
+# 预测
+predict.py
