@@ -17,9 +17,11 @@ for i in range(1000):
     if done:
         break        
 
+print(f"count {len(rewards)}")
+
 import matplotlib.pyplot as plt
 import numpy
 plt.plot(numpy.cumsum(rewards))
 plt.show()
-plt.plot(data.close[200:1200])
+plt.plot(data.close.loc[:len(rewards)*env.window_size])
 plt.show()
