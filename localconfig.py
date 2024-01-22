@@ -1,2 +1,2 @@
-tqsdkuser = "15800563203"
-tqsdkpassword = "xds123456"
+tqsdkuser = "123456"
+tqsdkpassword = "pw123456"
