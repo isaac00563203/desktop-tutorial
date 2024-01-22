@@ -5,6 +5,7 @@ from stable_baselines3 import DDPG
 
 symbol = "KQ.m@CFFEX.IF"
 data = getDataFromTqSdk(symbol, 60, "test.csv", datetime(2023, 11, 10, 9, 0, 0), datetime(2023, 11, 15, 15,0,0), False)
+data = data[200:]
 env = FutureEnv(data)
 model = DDPG.load(f"{RESULTDIR}/ddpg_future.zip", env=env)
 obs = env.reset()
@@ -17,6 +18,8 @@ for i in range(1000):
         break        
 
 import matplotlib.pyplot as plt
-plt.plot(rewards)
+import numpy
+plt.plot(numpy.cumsum(rewards))
 plt.show()
-
+plt.plot(data.close[200:1200])
+plt.show()

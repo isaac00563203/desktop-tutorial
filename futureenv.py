@@ -27,10 +27,11 @@ class FutureEnv(gym.Env):
         self.position = 0
 
         self.price_list = data['close'].tolist()
+
         self.data = data[['open', 'high', 'low', 'close']] # 'MA5', 'MA10', 'MA20', 'MA30', 'MA60', 'MA120', 'MA240', 'EMA5', 'EMA10', 'EMA20', 'EMA30', 'EMA60', 'EMA120', 'EMA240', 'SAR', 'CCI', 'ATR', 'OBV', 'WILLR', 'AD']]
 
         self.window_size = kwargs.get('window_size', 10)
-
+        
         self.amount = kwargs.get('amount', 1)
         self.buy_cost_rate = kwargs.get('buy_cost_rate', 0.0000)        
         self.sell_cost_rate = kwargs.get('sell_cost_rate', 0.0000)     
@@ -57,8 +58,8 @@ class FutureEnv(gym.Env):
             reward -= 2 *self.pre_price * self.amount * self.sell_cost_rate
         return reward
 
-    def _close_position(self):
-        if self.position > 0:
+    def _close_position(self):        
+        if self.position > 0:            
             return self.pre_price * self.amount * self.sell_cost_rate
         elif self.position < 0:
             return self.pre_price * self.amount * self.buy_cost_rate
@@ -75,10 +76,13 @@ class FutureEnv(gym.Env):
         action = np.argmax(action)
         if action == 0:
             reward = self._close_position()
+            self.position = 0
         elif action == 1:  # buy
             reward = self._buy()
+            self.position = 1
         elif action == 2:  # sell
             reward = self._sell()
+            self.position = -1
         else:
             raise ValueError("Invalid action {}".format(action))
 
