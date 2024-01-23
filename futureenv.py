@@ -12,7 +12,10 @@ class FutureEnv(gym.Env):
         self.data : DataFrame = data
         self.max_steps : int = len(data) 
         self.price_list : list = data['close'].tolist()
-        self.data : DataFrame = data[['open', 'high', 'low', 'close']] # 'MA5', 'MA10', 'MA20', 'MA30', 'MA60', 'MA120', 'MA240', 'EMA5', 'EMA10', 'EMA20', 'EMA30', 'EMA60', 'EMA120', 'EMA240', 'SAR', 'CCI', 'ATR', 'OBV', 'WILLR', 'AD']]
+        
+        # self.data 只取 n_ 开头的列
+        self.data = data.filter(regex='^n_')        
+        
         self.window_size : int = kwargs.get('window_size', 60)      
         self.amount : int = kwargs.get('amount', 1)
         self.buy_cost_rate : float = kwargs.get('buy_cost_rate', 0.0000)        
