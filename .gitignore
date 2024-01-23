@@ -17,4 +17,4 @@ __pycache__/
 .temp/*
 .log
 
-localconfig
+localconfig.py

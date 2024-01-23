@@ -114,13 +114,14 @@ def add_tech_index(df, tech_list, tech_para_list):
                         for j in range(len(result)):
                             df[colunm_name[i][j]] = result[j]
                     else:
-                        print('多参数技术指标返回值错误')                
+                        df[colunm_name[i]] = result                                    
     return df
         
 if __name__ == "__main__":
     import pandas as pd
     import numpy as np
-    df = pd.DataFrame(np.random.randn(100, 5), columns=['open', 'high', 'low', 'close', 'volume'])
+    #df = pd.DataFrame(np.random.randn(100, 5), columns=['open', 'high', 'low', 'close', 'volume'])
+    df = pd.read_csv(".cache/test.csv")
     df = add_tech_index(df, tech_list, tech_para_list)
     print(df.tail(10))
     print(df.columns)
