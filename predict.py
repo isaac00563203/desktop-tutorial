@@ -1,4 +1,4 @@
-from getdata import getDataFromTqSdk, RESULTDIR
+from getdata import get_data, RESULTDIR
 from dataprocess import pre_cook_data
 from datetime import datetime
 from futureenv import FutureEnv
@@ -6,11 +6,14 @@ from stable_baselines3 import DDPG
 
 # 取数据
 symbol = "KQ.m@CFFEX.IF"
-data = getDataFromTqSdk(symbol, 60, "test.csv", datetime(2023, 12, 1, 9, 0, 0), datetime(2023, 12, 31, 15,0,0), False)
+data =  get_data(symbol, 60, "test.csv", datetime(2023, 12, 1, 9, 0, 0), datetime(2023, 12, 31, 15,0,0), False)
+
 # 预处理数据
 data = pre_cook_data(data)
+
 # 初始化期货 env
 env = FutureEnv(data)
+
 # 加载模型
 model = DDPG.load(f"{RESULTDIR}/ddpg_future.zip", env=env)
 obs = env.reset()
