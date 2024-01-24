@@ -13,6 +13,7 @@ period = 60
 data_csv_filename = "test.csv"
 
 data = get_data(symbol, period, data_csv_filename,  reload=False)
+data = data[(data.date >= start_dt.date()) & (data.date <= end_dt.date())]
 
 # 预处理数据
 data = pre_cook_data(data)
@@ -22,17 +23,17 @@ env = FutureEnv(data)
 
 # 训练模型
 model = DDPG("MlpPolicy", 
-            buffer_size=2048, 
+            buffer_size=1024, 
             batch_size=128*2, 
-            learning_rate=0.001,
+            learning_rate=0.0001,
             train_freq=1,
             tau=0.001,
             gamma=0.99,
-            policy_kwargs=dict(net_arch=[256*4, 256]),
+            policy_kwargs=dict(net_arch=[256, 256]),
             tensorboard_log=f"{LOGDIR}/ddpg_future_tensorboard/",
             env=env, 
             verbose=10)
-model.learn(total_timesteps=500_000, log_interval=100)
+model.learn(total_timesteps=500_000, log_interval=10)
 model.save(f"{RESULTDIR}/ddpg_future.zip")
 
 

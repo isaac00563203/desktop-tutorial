@@ -1,5 +1,6 @@
 import talib
 from pandas import DataFrame
+from datetime import time
 from sklearn.preprocessing import StandardScaler
 
 # 技术指标列表
@@ -89,8 +90,7 @@ def add_tech_index(df, tech_list, tech_para_list):
                 return None
             
             # 如果参数为空，则直接计算
-            if len(para) == 0:
-                print('无参数技术指标：', tech)
+            if len(para) == 0:                
                 result = tech_index(df, tech, para)
                 if isinstance(result, tuple):
                     for i in range(len(result)):
@@ -98,8 +98,7 @@ def add_tech_index(df, tech_list, tech_para_list):
                 else:
                     df[colunm_name[0]] = result
                         
-            elif isinstance(para[0], list) == False:
-                print('单参数技术指标：', tech)
+            elif isinstance(para[0], list) == False:                
                 for i in range(len(para)):
                     result = tech_index(df, tech, para[i])
                     # 如果返回值是元组，则需要分别赋值
@@ -108,13 +107,11 @@ def add_tech_index(df, tech_list, tech_para_list):
                             df[colunm_name[i][j]] = result[j]
                     else:
                         df[colunm_name[i]] = result
-            else:
-                print('多参数技术指标：', tech)
+            else:                
                 for i in range(len(para)):
                     result = tech_index(df, tech, para[i])
                     if isinstance(result, tuple):
-                        for j in range(len(result)):
-                            print(colunm_name[i][j])
+                        for j in range(len(result)):                            
                             df[colunm_name[i][j]] = result[j]
                     else:
                         df[colunm_name[i]] = result                                    
@@ -154,8 +151,16 @@ def pre_cook_data(df : DataFrame,
     df = add_tech_index(df, tech_list, tech_para_list)
     # 取出所有的技术指标名称
     use_tech_name_list = get_tech_name_list(tech_name_list)
+
     # 将 "open", "high", "low", "close", "volume" 也加入到技术指标中
     use_tech_name_list.extend(["open", "high", "low", "close", "volume"])
+
+    # 分钟线数据,与成交量相关,也需要加入到技术指标中
+    # 取出时间列的最小值
+    min_time = df["time"].min()
+    t = df["time"] - min_time
+    use_tech_name_list.extend(["timeline"])
+
     # 数据正则化
     df = standardscaler_data(df, use_tech_name_list)
     # 去掉前240行
