@@ -16,7 +16,7 @@ class FutureEnv(gym.Env):
         # self.data 只取 n_ 开头的列
         self.data = data.filter(regex='^n_')        
         
-        self.window_size : int = kwargs.get('window_size', 60)      
+        self.window_size : int = kwargs.get('window_size', 30)      
         self.amount : int = kwargs.get('amount', 1)
         self.buy_cost_rate : float = kwargs.get('buy_cost_rate', 0.0000)        
         self.sell_cost_rate : float = kwargs.get('sell_cost_rate', 0.0000)     

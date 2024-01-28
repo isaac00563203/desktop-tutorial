@@ -80,7 +80,16 @@ def tech_index(df, tech, para):
     else:
         return None 
     
-def add_tech_index(df, tech_list, tech_para_list):
+def add_tech_index(df : DataFrame, tech_list : list, tech_para_list : dict):
+    """
+    为df增加技术指标,并返回df    
+    df : DataFrame
+    tech_list : 技术指标列表
+    tech_para_list : 技术指标参数列表
+    注意:
+        1. tech_list 与 tech_para_list 的长度必须一致
+        2. tech_para_list 中的参数个数必须与 tech_name_list 中的列名个数一致        
+    """
     for tech in tech_list:
         if tech in tech_para_list.keys():
             para = tech_para_list[tech]
@@ -130,37 +139,47 @@ def standardscaler_data(data : DataFrame,
     return data
 
 # 取出所有的技术指标名称
-def get_tech_name_list(tech_name_list):    
-    tech_name_list = tech_name_list.values()
-    tech_name_list = [item for sublist in tech_name_list for item in sublist]    
-    result = []
-    for item in tech_name_list:
-        if isinstance(item, list):
-            result.extend(item)
-        else:
-            result.append(item)
-    return result
+def get_tech_name_list(tech_list):        
+    tech_name_list = []
+    for tech in tech_list:
+        if tech in tech_name_list.keys():
+            colunm_name = tech_name_list[tech]
+            if isinstance(colunm_name[0], list):
+                for i in range(len(colunm_name)):
+                    tech_name_list.extend(colunm_name[i])
+            else:
+                tech_name_list.extend(colunm_name)
+    return tech_name_list
+
 
 # 预处理数据
 def pre_cook_data(df : DataFrame,
                   tech_list : list = tech_list,
-                  tech_para_list : dict = tech_para_list,
-                  tech_name_list : dict = tech_name_list,
+                  tech_para_list : dict = tech_para_list,                  
+                  origindata : bool = True
                   ) -> DataFrame:
     # 计算技术指标
     df = add_tech_index(df, tech_list, tech_para_list)
     # 取出所有的技术指标名称
-    use_tech_name_list = get_tech_name_list(tech_name_list)
+    use_tech_name_list = get_tech_name_list(tech_list)
 
-    # 将 "open", "high", "low", "close", "volume" 也加入到技术指标中
-    use_tech_name_list.extend(["open", "high", "low", "close", "volume"])
+    if origindata:
+        if "close" not in use_tech_name_list:
+            use_tech_name_list.append("close")
+        if "high" not in use_tech_name_list:
+            use_tech_name_list.append("high")
+        if "low" not in use_tech_name_list:
+            use_tech_name_list.append("low")
+        if "open" not in use_tech_name_list:
+            use_tech_name_list.append("open")    
+        if "volume" not in use_tech_name_list:
+            use_tech_name_list.append("volume")         
 
-    # 分钟线数据,与成交量相关,也需要加入到技术指标中
-    # 取出时间列的最小值
-    min_time = df["time"].min()
-    t = df["time"] - min_time
-    use_tech_name_list.extend(["timeline"])
+    # 为每日数据增加序列号
+    df["minute_index"] = df.groupby("date").cumcount()
+    use_tech_name_list.append("minute_index")
 
+    print(f"技术指标列表: {use_tech_name_list}")
     # 数据正则化
     df = standardscaler_data(df, use_tech_name_list)
     # 去掉前240行
@@ -171,22 +190,32 @@ def pre_cook_data(df : DataFrame,
 if __name__ == "__main__":
     import pandas as pd
     import numpy as np    
+    from datetime import datetime
+    
     df = pd.read_csv(".cache/test.csv")
+    df["datetime"] = df.datetime.apply(lambda x: datetime.strptime(x, "%Y-%m-%d %H:%M:%S"))        
+    df["time"] = df['time'].apply(lambda x: datetime.strptime(x, "%H:%M:%S").time())
+    df['date'] = df['date'].apply(lambda x: datetime.strptime(x, "%Y-%m-%d").date())
+    
     # 计算技术指标
     df = add_tech_index(df, tech_list, tech_para_list)
-    # 取出所有的技术指标名称
-    use_tech_name_list = get_tech_name_list(tech_name_list)
-    # 将 "open", "high", "low", "close", "volume" 也加入到技术指标中
-    use_tech_name_list.extend(["open", "high", "low", "close", "volume"])
-    # 数据正则化
-    df = standardscaler_data(df, use_tech_name_list)
-    # 取出所有 "n_" 开头的列
-    use_tech_name_list = [item for item in df.columns if item.startswith("n_")]
-    # 取出需要的列
-    df = df[use_tech_name_list]
-    # 打印
+
+    df = pre_cook_data(df, tech_list, tech_para_list, tech_name_list)
+
+    #为每日数据增加序列号
+    df["date_index"] = df.groupby("date").cumcount()
+    print(df.columns)
     print(df.head())
     print(df.tail())
+    
+
+
+    # 计算时间戳
+    # timestamp = df["datetime"].apply(lambda x: x.timestamp())
+    # min_time = timestamp.min()
+    # df["timeline"] = timestamp - min_time
+    # print(df.columns)
+    # print(df.head())
     
     
 

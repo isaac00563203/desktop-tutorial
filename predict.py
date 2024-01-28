@@ -6,10 +6,15 @@ from stable_baselines3 import DDPG
 
 # 取数据
 symbol = "KQ.m@CFFEX.IF"
-data =  get_data(symbol, 60, "test.csv", datetime(2023, 12, 1, 9, 0, 0), datetime(2023, 12, 31, 15,0,0), False)
+data =  get_data(symbol, 60, "test.csv", datetime(2016, 1, 1, 9, 0, 0), datetime(2023, 12, 31, 15,0,0), False)
+
+# # 取2023年后的数据
+data = data[data.date < datetime(2023, 1, 1, 9, 0, 0).date()]
 
 # 预处理数据
-data = pre_cook_data(data)
+tech_list = ["high","low","close",]
+data = pre_cook_data(data, tech_list=tech_list, tech_para_list={}, origindata=False)
+
 
 # 初始化期货 env
 env = FutureEnv(data)
@@ -28,7 +33,10 @@ for i in range(steps):
 
 import matplotlib.pyplot as plt
 import numpy
+# 将累计rewords画出来, 以及价格走势,分两个子图
+plt.subplot(2,1,1)
 plt.plot(numpy.cumsum(rewards))
-plt.show()
-plt.plot(data.close.loc[::env.window_size])
+plt.subplot(2,1,2)
+prices = data.close.loc[::env.window_size].to_numpy()
+plt.plot(prices)
 plt.show()
