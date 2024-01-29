@@ -9,11 +9,11 @@ symbol = "KQ.m@CFFEX.IF"
 data =  get_data(symbol, 60, "test.csv", datetime(2016, 1, 1, 9, 0, 0), datetime(2023, 12, 31, 15,0,0), False)
 
 # # 取2023年后的数据
-data = data[data.date < datetime(2023, 1, 1, 9, 0, 0).date()]
+data = data[data.date > datetime(2023, 1, 1, 9, 0, 0).date()]
 
 # 预处理数据
 tech_list = ["high","low","close",]
-data = pre_cook_data(data, tech_list=tech_list, tech_para_list={}, origindata=False)
+data = pre_cook_data(data, tech_list=[], tech_para_list={}, origindata=True)
 
 
 # 初始化期货 env

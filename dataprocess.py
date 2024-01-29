@@ -139,17 +139,17 @@ def standardscaler_data(data : DataFrame,
     return data
 
 # 取出所有的技术指标名称
-def get_tech_name_list(tech_list):        
-    tech_name_list = []
+def get_tech_name_list(tech_list):    
+    result_list = []        
     for tech in tech_list:
         if tech in tech_name_list.keys():
             colunm_name = tech_name_list[tech]
             if isinstance(colunm_name[0], list):
                 for i in range(len(colunm_name)):
-                    tech_name_list.extend(colunm_name[i])
+                    result_list.extend(colunm_name[i])
             else:
-                tech_name_list.extend(colunm_name)
-    return tech_name_list
+                result_list.extend(colunm_name)
+    return result_list
 
 
 # 预处理数据
